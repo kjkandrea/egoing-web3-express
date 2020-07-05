@@ -6,8 +6,10 @@ const qs = require('querystring')
 const path = require('path')
 const template = require('./lib/template.js')
 const sanitizeHtml = require('sanitize-html')
+const compression = require('compression')
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }))
+app.use(compression())
 
 // route, routing
 app.get('/', (req, res) => {

@@ -133,7 +133,7 @@ function (request, response) {
 * `res.end()` : 응답을 종료한다.
 * `response.set()` : 헤더 값을 세팅한다. 세팅 후 res.send()를 호출하면 바디없이 헤더만 보낼 수 있다.
 
-## 외부 미들웨어(Middleware)
+## 미들웨어(Middleware)
 
 ### body-parser 미들웨어
 
@@ -206,6 +206,29 @@ app.post('/create', (req, res) => {
     res.redirect(`/page/${title}`);
   });
 });
-````
+```
 
 `body-parser`에서 바디를 파싱해주는 동작을 수행해줌으로서 이처럼 코드를 한층 간결하게 만들 수 있다.
+
+## 외부 미들웨어(Middleware)
+
+### compression (압축)
+
+주고받는 데이터 리소스를 줄이기위해 `gzip`을 도입하는데에 쓰인다.
+
+#### Install 
+
+```
+npm install compression --save
+```
+
+``` javascript
+// main.js
+const compression = require('compression')
+
+app.use(compression())
+```
+
+#### How to Use
+
+이후 Chrome Browser Network 탭을 살펴보면 Content-Encoding: gzip 으로 바뀐것을 볼 수 있다.
