@@ -40,4 +40,32 @@ express 프레임워크를 도입함으로서 코드가 간결해져 가독성�
 
 ## Pure Node.js코드 Express로 변경하기
 
-### root 페이지 구현
+### root 페이지 구현 
+
+### page/* 서브페이지 구현 
+
+## 라우팅(Routing)
+
+### 동적 라우팅
+
+[Express - Routing](http://expressjs.com/en/guide/routing.html) 문서를 참고하여 동적 라우팅을 다음 코드로 테스트 하여보자.
+
+``` javascript 
+app.get('/page/:pageId', (req, res) => {
+  res.send(req.params)
+});
+```
+
+실행 후 `http://localhost:3000/page/something` 로 접속해보면 객체가 반환되는것을 볼 수 있다.
+
+``` json
+{
+  "pageId": "something"
+}
+```
+
+이 말인 즉슨 `pageId`에 다음과 같이 접근 할 수 있는 것이다.
+
+``` javascript
+request.params.pageId // something
+```
