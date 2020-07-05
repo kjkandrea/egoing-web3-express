@@ -74,7 +74,7 @@ app.post('/create', (req, res) => {
       const title = post.title;
       const description = post.description;
       fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
-        res.redirect(err`/page/${title}`);
+        res.redirect(`/page/${title}`);
       });
     });
 });
@@ -117,7 +117,7 @@ app.post('/update', (req, res) => {
       const description = post.description;
       fs.rename(`data/${id}`, `data/${title}`, function(err){
         fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
-          res.redirect(err`/page/${title}`);
+          res.redirect(`/page/${title}`);
         })
       });
     });
@@ -133,7 +133,7 @@ app.post('/delete', (req, res) => {
         const id = post.id;
         const filteredId = path.parse(id).base;
         fs.unlink(`data/${filteredId}`, (err) => {
-          res.redirect(err`/`);
+          res.redirect(`/`);
         })
     });
 });
