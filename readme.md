@@ -50,6 +50,10 @@ express 프레임워크를 도입함으로서 코드가 간결해져 가독성�
 
 ### delete 기능 구현
 
+## Middleware 사용
+
+### body-parser 도입
+
 ## 라우팅(Routing)
 
 라우팅 이란? [위키피디아에 정의된 라우팅](https://ko.wikipedia.org/wiki/%EB%9D%BC%EC%9A%B0%ED%8C%85)은 네트워크 안에서 통신 데이터를 보낼 때 최적의 경로를 선택하는 과정이다.
@@ -80,7 +84,7 @@ app.get('/page/:pageId', (req, res) => {
 req.params.pageId // something
 ```
 
-### 라우팅 정의
+### 라우팅 HTTP
 
 `app.get()` 말고도 자주쓰는 HTTP요청에 대입하여 다음과 같은 메소드를 사용할 수 있다.
 
@@ -127,3 +131,70 @@ function (request, response) {
 * `res.end()` : 응답을 종료한다.
 * `response.set()` : 헤더 값을 세팅한다. 세팅 후 res.send()를 호출하면 바디없이 헤더만 보낼 수 있다.
 
+## 외부 미들웨어(Middleware)
+
+### body-parser 미들웨어
+
+[Express : body-parser](http://expressjs.com/en/resources/middleware/body-parser.html)
+
+#### Install
+
+``` 
+npm install body-parser --save
+```
+
+``` javascript 
+// main.js
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.urlencoded({ extended: false }))
+```
+
+#### How to Use
+
+`body-parser` 미들웨어를 도입하기 전의 body를 파싱하는 소스를 살펴보자. 아래의 코드는 `post('/create')` 요청이 들어오면 해당 요청을 해석하여 파일을 만드는 코드이다.
+
+``` javascript
+app.post('/create', (req, res) => {
+  let body = '';
+  req.on('data', (data) => {
+      body = body + data;
+  });
+  req.on('end', () => {
+    const post = qs.parse(body);
+    const title = post.title;
+    const description = post.description;
+    fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
+      res.redirect(`/page/${title}`);
+    });
+  });
+});
+```
+
+이 중 body를 해석하는 부분을 살펴보면...
+
+``` javascript
+let body = '';
+req.on('data', (data) => {
+    body = body + data;
+});
+req.on('end', () => {
+    const post = qs.parse(body);
+    ... // 생략
+});
+```
+
+요청을 해석하기위해 body 변수를 만드는 과정이 포함되어있는데 이 과정을 `body-parser`를 통해 대체할 수 있다. 대체된 코드는 다음과 같다.
+
+``` javascript
+app.post('/create', (req, res) => {
+  const post = req.body;
+  const title = post.title;
+  const description = post.description;
+  fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
+    res.redirect(`/page/${title}`);
+  });
+});
+````
+
+`body-parser`에서 바디를 파싱해주는 동작을 수행해줌으로서 이처럼 코드를 한층 간결하게 만들 수 있다.
