@@ -44,7 +44,9 @@ express 프레임워크를 도입함으로서 코드가 간결해져 가독성�
 
 ### page/* 서브페이지 구현 
 
-### create 기능 구현 
+### create 기능 구현
+
+### update 기능 구현 
 
 ## 라우팅(Routing)
 
