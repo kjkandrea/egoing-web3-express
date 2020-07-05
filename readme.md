@@ -135,6 +135,12 @@ function (request, response) {
 
 ## 미들웨어(Middleware)
 
+서버는 요청에서부터 응답까지 하나의 흐름을 가지고 있다. 이 요청과 응답 사이에 여러가지 역할을 하는 함수의 집합을 '미들웨어' 라고 한다.
+
+이름 그대로 요청과 응답 사이에 있는 것이 `Middleware`라고 보아도 틀리지 않을 것이다.
+
+[Express : 미들웨어 사용](https://expressjs.com/ko/guide/using-middleware.html)
+
 ### body-parser 미들웨어
 
 [Express : body-parser](http://expressjs.com/en/resources/middleware/body-parser.html)
@@ -232,3 +238,82 @@ app.use(compression())
 #### How to Use
 
 이후 Chrome Browser Network 탭을 살펴보면 Content-Encoding: gzip 으로 바뀐것을 볼 수 있다.
+
+## 미들웨어(Middleware) 직접 만들기
+
+[Express : 미들웨어 사용](https://expressjs.com/ko/guide/using-middleware.html)
+
+### 기본 구조
+
+미들웨어는 함수이며 request, response, next를 인자로 받는다.
+
+``` javascript
+var app = express();
+
+app.use(function (req, res, next) {
+  console.log('Time:', Date.now());
+  next();
+});
+```
+
+### 방식에 따라 동작하는 미들웨어
+
+get방식일 경우, post방식일 경우를 나누어 다음과 같이 미들웨어를 생성할 수 있다.
+
+``` javascript
+app.get('*', (req, res, next) => {
+  fs.readdir('./data', (err, filelist) => {
+    req.list = filelist;
+    next();
+  });
+})
+```
+
+위처럼 첫번째 인자에 경로를 와일드카드로 설정해주면 모든 get요청에서 res.list 로 filelist에 접근할 수 있을것이다.
+
+### 미들웨어 res.list에 접근해보기
+
+위 미들웨어에서 `res.list` 객체가 생성되어 홈페이지를 표시하는 코드에서 다음과 같이 접근하여 사용할 수 있다.
+
+``` javascript
+app.get('/', (req, res) => {
+  const list = template.list(req.list)
+
+  res.send(list)
+});
+```
+
+### 하나의 마운트 경로에 두가지 미들웨어를 로드하는 예
+
+Express 공식 문서에 소개된 정의 방법이다.
+
+``` javascript
+app.use('/user/:id', function(req, res, next) {
+  console.log('Request URL:', req.originalUrl);
+  next();
+}, function (req, res, next) {
+  console.log('Request Type:', req.method);
+  next();
+});
+```
+
+### if문을 삽입하여 미들웨어의 흐름을 제어하는 예
+
+Express 공식 문서에 소개된 예시이다. 예시와 같은 경우 특정 조건에 충족할 때에(`req.params.id == 0`) `next('route')` 을 호출하는 것을 볼 수 있다. if문의 조건이 충족한다면 미들웨어는 next 미들웨어를 건너뛰며, 최하단의 미들웨어를 실행하게 된다.
+
+``` javascript 
+app.get('/user/:id', function (req, res, next) {
+  // if the user ID is 0, skip to the next route
+  if (req.params.id == 0) next('route');
+  // otherwise pass the control to the next middleware function in this stack
+  else next(); //
+}, function (req, res, next) {
+  // render a regular page
+  res.render('regular');
+});
+
+// handler for the /user/:id path, which renders a special page
+app.get('/user/:id', function (req, res, next) {
+  res.render('special');
+});
+```
