@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3000
 const fs = require('fs')
+const qs = require('querystring')
 const path = require('path')
 const template = require('./lib/template.js')
 const sanitizeHtml = require('sanitize-html')
@@ -21,9 +22,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/page/:pageId', (req, res) => {
-  fs.readdir('./data', function(err, filelist){
+  fs.readdir('./data', (err, filelist) => {
     const filteredId = path.parse(req.params.pageId).base
-    fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
+    fs.readFile(`data/${filteredId}`, 'utf8', (err, description) => {
       const title = req.params.pageId;
       const sanitizedTitle = sanitizeHtml(title);
       const sanitizedDescription = sanitizeHtml(description, {
@@ -44,6 +45,41 @@ app.get('/page/:pageId', (req, res) => {
   });
 });
 
+app.get('/create', (req, res) => {
+  fs.readdir('./data', (err, filelist) => {
+    const title = 'WEB - create';
+    const list = template.list(filelist);
+    const html = template.HTML(title, list, `
+      <form action="/create" method="post">
+        <p><input type="text" name="title" placeholder="title"></p>
+        <p>
+          <textarea name="description" placeholder="description"></textarea>
+        </p>
+        <p>
+          <input type="submit">
+        </p>
+      </form>
+    `, '');
+    res.send(html);
+  });
+});
+
+app.post('/create', (req, res) => {
+  let body = '';
+    req.on('data', (data) => {
+        body = body + data;
+    });
+    req.on('end', () => {
+      const post = qs.parse(body);
+      const title = post.title;
+      const description = post.description;
+      fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
+        res.writeHead(302, {Location: `/?id=${title}`});
+        res.end();
+      });
+    });
+});
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 });
@@ -56,65 +92,28 @@ const qs = require('querystring');
 const template = require('./lib/template.js');
 const path = require('path');
 
-const app = http.createServer(function(request,response){
-    const _url = request.url;
+const app = http.createServer(function(req,res){
+    const _url = req.url;
     const queryData = url.parse(_url, true).query;
     const pathname = url.parse(_url, true).pathname;
     if(pathname === '/'){
        else {
-        fs.readdir('./data', function(error, filelist){
-          const filteredId = path.parse(queryData.id).base;
-          fs.readFile(`data/${filteredId}`, 'utf8', function(err, description){
-            const title = queryData.id;
-            const sanitizedTitle = sanitizeHtml(title);
-            const sanitizedDescription = sanitizeHtml(description, {
-              allowedTags:['h1']
-            });
-            const list = template.list(filelist);
-            const html = template.HTML(sanitizedTitle, list,
-              `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
-              ` <a href="/create">create</a>
-                <a href="/update?id=${sanitizedTitle}">update</a>
-                <form action="delete_process" method="post">
-                  <input type="hidden" name="id" value="${sanitizedTitle}">
-                  <input type="submit" value="delete">
-                </form>`
-            );
-            response.writeHead(200);
-            response.end(html);
-          });
-        });
+        
       }
     } else if(pathname === '/create'){
-      fs.readdir('./data', function(error, filelist){
-        const title = 'WEB - create';
-        const list = template.list(filelist);
-        const html = template.HTML(title, list, `
-          <form action="/create_process" method="post">
-            <p><input type="text" name="title" placeholder="title"></p>
-            <p>
-              <textarea name="description" placeholder="description"></textarea>
-            </p>
-            <p>
-              <input type="submit">
-            </p>
-          </form>
-        `, '');
-        response.writeHead(200);
-        response.end(html);
-      });
+      
     } else if(pathname === '/create_process'){
       const body = '';
-      request.on('data', function(data){
+      req.on('data', function(data){
           body = body + data;
       });
-      request.on('end', function(){
+      req.on('end', function(){
           const post = qs.parse(body);
           const title = post.title;
           const description = post.description;
           fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-            response.writeHead(302, {Location: `/?id=${title}`});
-            response.end();
+            res.writeHead(302, {Location: `/?id=${title}`});
+            res.end();
           })
       });
     } else if(pathname === '/update'){
@@ -138,44 +137,44 @@ const app = http.createServer(function(request,response){
             `,
             `<a href="/create">create</a> <a href="/update?id=${title}">update</a>`
           );
-          response.writeHead(200);
-          response.end(html);
+          res.writeHead(200);
+          res.end(html);
         });
       });
     } else if(pathname === '/update_process'){
       const body = '';
-      request.on('data', function(data){
+      req.on('data', function(data){
           body = body + data;
       });
-      request.on('end', function(){
+      req.on('end', function(){
           const post = qs.parse(body);
           const id = post.id;
           const title = post.title;
           const description = post.description;
           fs.rename(`data/${id}`, `data/${title}`, function(error){
             fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-              response.writeHead(302, {Location: `/?id=${title}`});
-              response.end();
+              res.writeHead(302, {Location: `/?id=${title}`});
+              res.end();
             })
           });
       });
     } else if(pathname === '/delete_process'){
       const body = '';
-      request.on('data', function(data){
+      req.on('data', function(data){
           body = body + data;
       });
-      request.on('end', function(){
+      req.on('end', function(){
           const post = qs.parse(body);
           const id = post.id;
           const filteredId = path.parse(id).base;
           fs.unlink(`data/${filteredId}`, function(error){
-            response.writeHead(302, {Location: `/`});
-            response.end();
+            res.writeHead(302, {Location: `/`});
+            res.end();
           })
       });
     } else {
-      response.writeHead(404);
-      response.end('Not found');
+      res.writeHead(404);
+      res.end('Not found');
     }
 });
 app.listen(3000);
