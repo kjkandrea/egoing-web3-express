@@ -1,3 +1,21 @@
+const express = require('express')
+const app = express()
+const port = 3000
+
+// route, routing
+app.get('/', (req, res) => {
+  res.send('Hello, Root!')
+});
+
+app.get('/about', (req, res) => {
+  res.send('Hello, About!')
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`)
+});
+
+/*
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
@@ -141,3 +159,4 @@ var app = http.createServer(function(request,response){
     }
 });
 app.listen(3000);
+*/
