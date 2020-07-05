@@ -37,3 +37,7 @@ app.listen(port, () => {
 
 Node.js 만 사용할 때에는 createServer, pathname 파싱 등 몇가지 처리를 해주어야한다. 
 express 프레임워크를 도입함으로서 코드가 간결해져 가독성이 좋아지고, 능률적으로 작업할 수 있게 되었다.
+
+## Pure Node.js코드 Express로 변경하기
+
+### root 페이지 구현
