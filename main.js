@@ -35,7 +35,7 @@ app.get('/page/:pageId', (req, res) => {
         `<h2>${sanitizedTitle}</h2>${sanitizedDescription}`,
         ` <a href="/create">create</a>
           <a href="/update/${sanitizedTitle}">update</a>
-          <form action="delete_process" method="post">
+          <form action="/delete" method="post">
             <input type="hidden" name="id" value="${sanitizedTitle}">
             <input type="submit" value="delete">
           </form>`
@@ -74,7 +74,7 @@ app.post('/create', (req, res) => {
       const title = post.title;
       const description = post.description;
       fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
-        res.redirect(302, `/page/${title}`);
+        res.redirect(err`/page/${title}`);
       });
     });
 });
@@ -107,22 +107,36 @@ app.get('/update/:pageId', (req, res) => {
 
 app.post('/update', (req, res) => {
   let body = '';
-    req.on('data', function(data){
+    req.on('data', (data) => {
         body = body + data;
     });
-    req.on('end', function(){
+    req.on('end', () => {
       const post = qs.parse(body);
       const id = post.id;
       const title = post.title;
       const description = post.description;
       fs.rename(`data/${id}`, `data/${title}`, function(err){
-        fs.writeFile(`data/${title}`, description, 'utf8', function(err){
-          res.redirect(302, `/page/${title}`);
+        fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
+          res.redirect(err`/page/${title}`);
         })
       });
     });
 });
 
+app.post('/delete', (req, res) => {
+  let body = '';
+    req.on('data', (data) => {
+        body = body + data;
+    });
+    req.on('end', () => {
+        const post = qs.parse(body);
+        const id = post.id;
+        const filteredId = path.parse(id).base;
+        fs.unlink(`data/${filteredId}`, (err) => {
+          res.redirect(err`/`);
+        })
+    });
+});
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
@@ -150,19 +164,7 @@ const app = http.createServer(function(req,res){
     } else if(pathname === '/update_process'){
       
     } else if(pathname === '/delete_process'){
-      const body = '';
-      req.on('data', function(data){
-          body = body + data;
-      });
-      req.on('end', function(){
-          const post = qs.parse(body);
-          const id = post.id;
-          const filteredId = path.parse(id).base;
-          fs.unlink(`data/${filteredId}`, function(err){
-            res.writeHead(302, {Location: `/`});
-            res.end();
-          })
-      });
+      
     } else {
       res.writeHead(404);
       res.end('Not found');
