@@ -54,6 +54,8 @@ express 프레임워크를 도입함으로서 코드가 간결해져 가독성�
 
 ### body-parser 도입
 
+### compression 도입
+
 ## 라우팅(Routing)
 
 라우팅 이란? [위키피디아에 정의된 라우팅](https://ko.wikipedia.org/wiki/%EB%9D%BC%EC%9A%B0%ED%8C%85)은 네트워크 안에서 통신 데이터를 보낼 때 최적의 경로를 선택하는 과정이다.
@@ -149,6 +151,15 @@ const bodyParser = require('body-parser')
 
 app.use(bodyParser.urlencoded({ extended: false }))
 ```
+
+#### 설치하지 않아도 됩니다.
+
+현 버전 Express에는 body parser가 포함되어 있다. 다음과 같이 쓰자.
+
+``` javascript 
+app.use(express.urlencoded({ extended: false }));
+```
+
 
 #### How to Use
 

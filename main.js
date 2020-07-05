@@ -3,12 +3,11 @@ const app = express()
 const port = 3000
 const fs = require('fs')
 const qs = require('querystring')
-const bodyParser = require('body-parser')
 const path = require('path')
 const template = require('./lib/template.js')
 const sanitizeHtml = require('sanitize-html')
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 
 // route, routing
 app.get('/', (req, res) => {
