@@ -413,3 +413,18 @@ const topicRouter = require('./routes/topic')
 
 app.use('/topic', topicRouter);
 ```
+
+## 보안
+
+[Express : 보안 우수 사례](https://expressjs.com/ko/advanced/best-practice-security.html)
+
+### Helmet 사용
+
+```
+npm install --save helmet
+```
+
+``` javascript
+const helmet = require('helmet')
+app.use(helmet())
+```

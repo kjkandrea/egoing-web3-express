@@ -5,6 +5,8 @@ const fs = require('fs')
 const compression = require('compression')
 const indexRouter = require('./routes/index')
 const topicRouter = require('./routes/topic')
+const helmet = require('helmet')
+app.use(helmet())
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }))
