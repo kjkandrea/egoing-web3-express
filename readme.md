@@ -317,3 +317,23 @@ app.get('/user/:id', function (req, res, next) {
   res.render('special');
 });
 ```
+
+## 정적 파일 제공하기
+
+[Express : 정적 파일 제공](https://expressjs.com/ko/starter/static-files.html)
+
+### express.static
+
+기본제공 미들웨어 함수인 `express.static`을 사용한다.
+
+``` javascript
+app.use(express.static('public'));
+```
+
+'public' 은 루트 디렉토리 하위에 있는 정적 파일을 담을 디렉토리 명칭이다.
+
+이후 'public' 경로를 root 라고 생각하고 정적 리소스들을 로드할 수 있다.
+
+``` html
+<img src="/images/elia.jpg" /> <!-- ./public/images/elia.jpg -->
+```

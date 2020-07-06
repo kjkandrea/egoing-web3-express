@@ -8,6 +8,7 @@ const template = require('./lib/template.js')
 const sanitizeHtml = require('sanitize-html')
 const compression = require('compression')
 
+app.use(express.static('public'));
 app.use(express.urlencoded({ extended: false }))
 app.use(compression())
 
@@ -25,7 +26,10 @@ app.get('/', (req, res) => {
   const description = 'Hello, Node.js'
   const list = template.list(req.list)
   const html = template.HTML(title, list,
-    `<h2>${title}</h2>${description}`,
+    `
+      <h2>${title}</h2>${description}
+      <img style="display:block;max-width:370px;margin-top:25px;" src="/images/elia.jpg" />
+    `,
     `<a href="/create">create</a>`
   )
   res.send(html)
