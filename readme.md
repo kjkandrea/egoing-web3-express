@@ -369,3 +369,41 @@ app.use((err, req, res, next) => {
 });
 ```
 
+## 라우터 (express.Router)
+
+### 모듈식 마운팅
+
+앱의 루트역할을 하는 파일이 복잡해질 경우 모듈 마운팅으로 기능을 분리할 수 있다.
+
+`/routes/topic.js`란 파일에 topic관련 기능을 완전이 분리하여 정리하고자 할 경우를 설명한다.
+
+#### /routes/topic.js
+
+모듈에서 express를 다시 로드해주고 router 상수를 다음과 같이 선언한다.
+가장 마지막열에서 router를 export한다.
+
+``` javascript
+// /routes/topic.js
+
+const express = require('express')
+const router = express.Router()
+
+router.post('/create', (req, res) => {});
+router.post('/update', (req, res) => {});
+router.post('/delete', (req, res) => {});
+router.get('/:pageId', (req, res) => {});
+
+module.exports = router;
+```
+
+#### main.js
+
+다음과 같이 topicRouter를 불러들이면 `routes/topic.js`모듈의 기능들이 `main.js`에 포함된다.
+
+``` javascript
+// main.js
+
+const topicRouter = require('./routes/topic')
+
+app.use('/topic', topicRouter);
+```
