@@ -3,7 +3,7 @@ const app = express()
 const port = 3000
 const fs = require('fs')
 const compression = require('compression')
-const template = require('./lib/template.js')
+const indexRouter = require('./routes/index')
 const topicRouter = require('./routes/topic')
 
 app.use(express.static('public'));
@@ -19,20 +19,8 @@ app.get('*', (req, res, next) => {
 })
 
 // route, routing
-app.get('/', (req, res) => {
-  const title = 'Welcome'
-  const description = 'Hello, Node.js'
-  const list = template.list(req.list)
-  const html = template.HTML(title, list,
-    `
-      <h2>${title}</h2>${description}
-      <img style="display:block;max-width:370px;margin-top:25px;" src="/images/elia.jpg" />
-    `,
-    `<a href="/topic/create">create</a>`
-  )
-  res.send(html)
-});
 
+app.use('/', indexRouter);
 app.use('/topic', topicRouter);
 
 app.use((req, res, next) => {
