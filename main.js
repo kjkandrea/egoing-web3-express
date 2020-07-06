@@ -35,9 +35,10 @@ app.get('/', (req, res) => {
   res.send(html)
 });
 
-app.get('/page/:pageId', (req, res) => {
+app.get('/page/:pageId', (req, res, next) => {
   const filteredId = path.parse(req.params.pageId).base
   fs.readFile(`data/${filteredId}`, 'utf8', (err, description) => {
+    if(err) next(err);
     const title = req.params.pageId;
     const sanitizedTitle = sanitizeHtml(title);
     const sanitizedDescription = sanitizeHtml(description, {
@@ -126,6 +127,15 @@ app.post('/delete', (req, res) => {
   fs.unlink(`data/${filteredId}`, (err) => {
     res.redirect(`/`);
   })
+});
+
+app.use((req, res, next) => {
+  res.status(404).send('Sorry. cant find that!')
+})
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 app.listen(port, () => {

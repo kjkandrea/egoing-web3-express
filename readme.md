@@ -337,3 +337,35 @@ app.use(express.static('public'));
 ``` html
 <img src="/images/elia.jpg" /> <!-- ./public/images/elia.jpg -->
 ```
+
+## 오류 처리
+
+[Express : 오류처리](https://expressjs.com/ko/guide/error-handling.html)
+
+### 404 처리
+
+``` javascript
+app.use((req, res, next) => {
+  res.status(404).send('Sorry. cant find that!')
+})
+```
+
+### 오류 핸들링을 위한 미들웨어
+
+미들웨어의 4개의 인자를 가지고 있는 콜백함수는 오류를 핸들링하기 위한 미들웨어로 사용된다.
+
+#### 오류를 캐치하는 방법
+
+``` javascript
+if(err) next(err);
+```
+
+#### 오류를 처리하는 방법
+
+``` javascript
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+```
+
