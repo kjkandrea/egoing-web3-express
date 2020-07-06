@@ -62,6 +62,8 @@ express 프레임워크를 도입함으로서 코드가 간결해져 가독성�
 
 ### Router로 리펙토링
 
+### 보안 : Helmet 사용
+
 ## 라우팅(Routing)
 
 라우팅 이란? [위키피디아에 정의된 라우팅](https://ko.wikipedia.org/wiki/%EB%9D%BC%EC%9A%B0%ED%8C%85)은 네트워크 안에서 통신 데이터를 보낼 때 최적의 경로를 선택하는 과정이다.
@@ -427,4 +429,24 @@ npm install --save helmet
 ``` javascript
 const helmet = require('helmet')
 app.use(helmet())
+```
+
+## Express Generator
+
+[Express : Express 생성기](https://expressjs.com/ko/starter/generator.html)
+
+```
+npm install express-generator -g
+```
+
+### 사용법 보기
+
+```
+express -h
+```
+
+### 첫 생성
+
+```
+express .
 ```
